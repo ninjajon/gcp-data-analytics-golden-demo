@@ -57,12 +57,13 @@ gcp_account_name=$(gcloud auth list --filter=status:ACTIVE --format="value(accou
 
 # Get the Org Id (needed for org policies and creating the GCP project)
 org_id=$(gcloud organizations list --format="value(name)")
+org_id="229622160751"
 if [ -z "${org_id}" ]
 then
   echo "Org Id could not be automatically read."
   echo "Open this link: https://console.cloud.google.com/cloud-resource-manager/ and copy your org id."
   echo "Your org id will be in the format of xxxxxxxxxxxx"
-  read -p "Please enter your org id:" org_id
+  #read -p "Please enter your org id:" org_id
 else
   org_id_length=$(echo -n "${org_id}" | wc -m)
   org_id_length_int=$(expr ${org_id_length} + 0)
@@ -70,20 +71,21 @@ else
   then
     echo "You have more than one org id, please manually enter the correct one."
     echo "Your org id will be in the format of xxxxxxxxxxxx"
-    read -p "Please enter your org id:" org_id
+    #read -p "Please enter your org id:" org_id
   else
     echo "Org Id was automatically retreived."
   fi
 fi
 
 # Get the Billing Account (needed for creating the GCP project)
-billing_account=$(gcloud beta billing accounts list --format="value(ACCOUNT_ID)")
+#billing_account=$(gcloud beta billing accounts list --format="value(ACCOUNT_ID)")
+billing_account="01815E-401604-6C3E70"
 if [ -z "${billing_account}" ]
 then
   echo "Billing Account could not be automatically read."
   echo "Open this link: https://console.cloud.google.com/billing/ and copy your billing account."
   echo "Your billing account will be in the format of xxxxxx-xxxxxx-xxxxxx"
-  read -p "Please enter your billing account:" billing_account
+  #read -p "Please enter your billing account:" billing_account
 else
   billing_account_length=$(echo -n "${billing_account}" | wc -m)
   billing_account_length_int=$(expr ${billing_account_length} + 0)
@@ -91,7 +93,7 @@ else
   then
     echo "You have more than one billing account, please manually enter the correct one."
     echo "Your billing account will be in the format of xxxxxx-xxxxxx-xxxxxx"
-    read -p "Please enter your billing account:" billing_account
+    #read -p "Please enter your billing account:" billing_account
   else
     echo "Billing Account was automatically retreived."
   fi
@@ -102,7 +104,7 @@ echo "billing_account:  ${billing_account}"
 echo "org_id:           ${org_id}"
 
 echo "*********************************************************"
-read -p "Press [Enter] key if all the above items are set (gcp_account_name, org_id, billing_account). If not press Ctrl+C ..."
+#read -p "Press [Enter] key if all the above items are set (gcp_account_name, org_id, billing_account). If not press Ctrl+C ..."
 echo "*********************************************************"
 
 shared_demo_project_id="mySharedProject"
@@ -118,21 +120,24 @@ then
   echo "Open this link: http://go/argolis-values to get their values."
 
   if [[ -z "${ENV_SHARED_DEMO_PROJECT_ID}" ]]; then
-    read -p "Please enter [shared_demo_project_id]:" shared_demo_project_id
+    echo "Skipping project_id input"
+    #read -p "Please enter [shared_demo_project_id]:" shared_demo_project_id
   else
     shared_demo_project_id=${ENV_SHARED_DEMO_PROJECT_ID} 
     echo "Read environment variable [ENV_SHARED_DEMO_PROJECT_ID]: ${shared_demo_project_id}"
   fi
 
   if [[ -z "${ENV_AWS_OMNI_BIGLAKE_S3_BUCKET}" ]]; then
-    read -p "Please enter [aws_omni_biglake_s3_bucket]:" aws_omni_biglake_s3_bucket
+    echo "Skipping S3 bucket input"
+    #read -p "Please enter [aws_omni_biglake_s3_bucket]:" aws_omni_biglake_s3_bucket
   else
     aws_omni_biglake_s3_bucket=${ENV_AWS_OMNI_BIGLAKE_S3_BUCKET} 
     echo "Read environment variable [ENV_AWS_OMNI_BIGLAKE_S3_BUCKET]: ${aws_omni_biglake_s3_bucket}"
   fi  
 
   if [[ -z "${ENV_AZURE_OMNI_BIGLAKE_ADLS_NAME}" ]]; then
-    read -p "Please enter [azure_omni_biglake_adls_name]:" azure_omni_biglake_adls_name
+    echo "Skipping adls name input"
+    #read -p "Please enter [azure_omni_biglake_adls_name]:" azure_omni_biglake_adls_name
   else
     azure_omni_biglake_adls_name=${ENV_AZURE_OMNI_BIGLAKE_ADLS_NAME} 
     echo "Read environment variable [ENV_AZURE_OMNI_BIGLAKE_ADLS_NAME]: ${azure_omni_biglake_adls_name}"
@@ -166,10 +171,10 @@ terraform init
 # Validate
 terraform validate
 
-echo "terraform apply -var=\"gcp_account_name=${gcp_account_name}\" -var=\"org_id=${org_id}\" -var=\"billing_account=${billing_account}\" -var=\"project_id=data-analytics-demo\" -var=\"shared_demo_project_id=${shared_demo_project_id}\" -var=\"aws_omni_biglake_s3_bucket=${aws_omni_biglake_s3_bucket}\" -var=\"azure_omni_biglake_adls_name=${azure_omni_biglake_adls_name}\""
+echo "terraform apply -auto-approve -var=\"gcp_account_name=${gcp_account_name}\" -var=\"org_id=${org_id}\" -var=\"billing_account=${billing_account}\" -var=\"project_id=data-analytics-demo\" -var=\"shared_demo_project_id=${shared_demo_project_id}\" -var=\"aws_omni_biglake_s3_bucket=${aws_omni_biglake_s3_bucket}\" -var=\"azure_omni_biglake_adls_name=${azure_omni_biglake_adls_name}\""
 
 # Run the Terraform Apply
-terraform apply \
+terraform apply -auto-approve \
   -var="gcp_account_name=${gcp_account_name}" \
   -var="org_id=${org_id}" \
   -var="billing_account=${billing_account}" \
@@ -243,7 +248,7 @@ fi
 
 cd ..
 
-echo "terraform apply -var=\"gcp_account_name=${gcp_account_name}\" -var=\"org_id=${org_id}\" -var=\"billing_account=${billing_account}\" -var=\"project_id=data-analytics-demo\" -var=\"shared_demo_project_id=${shared_demo_project_id}\" -var=\"aws_omni_biglake_s3_bucket=${aws_omni_biglake_s3_bucket}\" -var=\"azure_omni_biglake_adls_name=${azure_omni_biglake_adls_name}\""
+echo "terraform apply -auto-approve -var=\"gcp_account_name=${gcp_account_name}\" -var=\"org_id=${org_id}\" -var=\"billing_account=${billing_account}\" -var=\"project_id=data-analytics-demo\" -var=\"shared_demo_project_id=${shared_demo_project_id}\" -var=\"aws_omni_biglake_s3_bucket=${aws_omni_biglake_s3_bucket}\" -var=\"azure_omni_biglake_adls_name=${azure_omni_biglake_adls_name}\""
 
 echo "*********************************************************"
 echo "Done"
